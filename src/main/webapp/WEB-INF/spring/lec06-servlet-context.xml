@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans 
+		https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+		
+	<!-- log표시 : log4j -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!--=================== annotation 기반 연결======================== -->
+	<mvc:annotation-driven />
+	<!-- 적용 대상 패키지 -->
+	<context:component-scan base-package="com.lec06.AOP" />
+	
+	<!-- 웹서비스용 JSP view 경로 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="/ctlDelete" class="com.lec06.aop.AOPController" >
+		<property name="aOPService" ref="MY_SVC" />
+	</bean>
+	<bean id="MY_SVC" class="com.lec06.aop.AOPServiceImpl">
+		<property name="aOPDAO" ref="MY_DAO" />
+	</bean>
+	<bean id="MY_DAO" class="com.lec06.aop.AOPDAO" />
+	
+	<bean id="MY_ASPECT" class="com.lec06.aop.CommonAspect" />
+	<!-- AOP 설정 -->
+	<aop:config>
+		<!-- <aop:aspect id="MY_What-Where-When" ref="MY_ASPECT">
+	    	<aop:pointcut id="MY_CUT" expression="execution(public * com.lec06..*Impl.*(..))" /> 
+	   		<aop:after pointcut-ref="MY_CUT" method="afterAdvice" />
+		</aop:aspect> -->
+		
+		<!-- <aop:aspect id="MY_What-Where-When" ref="MY_ASPECT">
+	    	<aop:pointcut id="MY_CUT" expression="execution(public * com.lec06..*Impl.*(..))" /> 
+	   		<aop:after-throwing pointcut-ref="MY_CUT" method="afterThrowingAdvice" throwing="ex" />
+		</aop:aspect> -->
+		
+		<!-- <aop:aspect id="MY_What-Where-When" ref="MY_ASPECT">
+	    	<aop:pointcut id="MY_CUT" expression="execution(public * com.lec06..*Impl.*(..))" /> 
+	   		<aop:after-returning pointcut-ref="MY_CUT" method="afterReturningAdvice" returning="res" />
+		</aop:aspect> -->
+		
+		<aop:aspect id="MY_What-Where-When" ref="MY_ASPECT">
+	    	<!-- <aop:pointcut id="MY_CUT" expression="execution(public * com.lec06..*Impl.*(..))" />  -->
+	    	<aop:pointcut id="MY_CUT" expression="execution(public * com.lec06..*DAO.*(..))" /> 
+	   		<aop:around pointcut-ref="MY_CUT" method="aroundAdvice" />
+		</aop:aspect>
+		<!-- <aop:advisor advice-ref="MY_ASPECT" pointcut-ref="MY_CUT">
+	    	<aop:before method="beforeAdvice" />
+		</aop:advisor> -->
+	</aop:config>
+
+
+	
+	
+	
+	
+	
+	<!-- ===========================XML 기반========================== -->
+	<!--  DI(생성자)BeanNameUrlHandlerMapping 
+	<bean name="/empList" class="com.lec04.di.EmpController" scope="singleton">
+		<constructor-arg ref="MY_EMPDAO_BEAN_NAME"/>
+	</bean> -->
+	
+	<!--  DI(프로퍼티)BeanNameUrlHandlerMapping -->
+	<!-- <bean name="/empList" class="com.lec04.di.EmpController" scope="singleton">
+		<property name="dao" ref="MY_EMPDAO_BEAN_NAME"/>
+		<property name="stringTest" value="abc"/>
+		<property name="stringTest"/>
+			<value>abc</value> 이렇게 써도 된다.
+	</bean> -->
+	
+	<!-- DI(프로퍼티) + SimpleUrlHandlerMapping -->
+	<!-- <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<value>/kosta/user/lkh/empList=MY_EMPCTL_BEAN_NAME
+				   /kosta/user/lkh/empDumy=MY_EMPCTL_BEAN_NAME
+			</value>
+		</property>
+	</bean>	
+	
+	<bean name="MY_EMPCTL_BEAN_NAME" class="com.lec04.di.EmpController" scope="singleton">
+		<property name="dao" ref="MY_EMPDAO_BEAN_NAME" />
+		<property name="stringTest" value="abc" />
+	</bean>
+	<bean name="MY_EMPDAO_BEAN_NAME" class="com.lec04.di.EmpDAO" scope="singleton"/>
+	 -->
+</beans>
