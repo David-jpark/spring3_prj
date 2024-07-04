@@ -1,0 +1,133 @@
+ 
+ -------------------------------------------------------------------
+트랜잭션(Transaction)
+-------------------------------------------------------------------
+	 데이터베이스와 같은 시스템에서 (여러 연산을 논리적으로 하나의 단위로 묶어서 처리)하는 (일련의 작업)
+	
+-------------------------------------------------------------------
+[트랜잭션의 특징] by 원혁
+-------------------------------------------------------------------
+1. Atomity(원자성)
+	* 여러 단계의 작업이 모두 성공적으로 수행되어야만 완료, 어느 하나라도 에러가 발생하면 트랜잭션 전부가 취소되어야 함
+2. Consistency(일관성)
+	* 특정 작업이 완료된 상태에서만 다음 작업이 수행되어야 함
+	* 트랜잭션이 커밋되기 전까지는 데이터베이스가 일관된 상태를 유지
+3. Isolation(고립성, 격리성)
+	* 둘 이상의 트랜잭션이 동시에 병행 실행되는 경우 어느 하나의 트랜잭션 실행중에 다른 트랜잭션의 연산이 끼어들 수 없음
+	* 수행중인 트랜잭션은 완전히 완료될 때까지 다른 트랙잭션에서 수행 결과를 참조할 수 없음
+4. Durability(영속성, 지속성)
+	* 성공적으로 완료된 트랜잭션의 결과는 영구적으로 반영되어야 함
+	* commit, rollback 
+
+[트랜잭션의 상태]
+	* Active(활동) : 트랜잭션이 실행중에 있는 상태
+	* Failed(장애) : 트랜잭션 실행에 오류가 발생되어 중단된 상태
+	* Aborted(철회) : 트랜잭션이 비정상적으로 종료되어 Rollback 연산을 수행한 상태
+	* Partially Committed(부분 완료) : 트랜잭션의 마지막 연산까지 실행했지만, Commit 연산이 실행되기 직전의 상태
+	* Committed(완료) : 트랜잭션이 성공적으로 종료되어 Commit 연산을 실행한 후의 상태
+
+
+-------------------------------------------------------------------
+선언적 트랜잭션(Declarative Transaction Management)  : https://velog.io/@limdae/%EC%B2%AB%EB%B2%88%EC%A7%B8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-16.-Transactional
+-------------------------------------------------------------------
+XML 기반 설정
+
+<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+<property name="dataSource" ref="myDS_CONSOL_PRINT"/>
+
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="*" rollback-for="Exception"/>
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="cut" expression="execution(* com.lec09..*Impl.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="cut" />
+	</aop:config>
+
+-------------------------------------------------------------------
+Annotation 기반 설정
+@Transactional   : https://velog.io/@limdae/%EC%B2%AB%EB%B2%88%EC%A7%B8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-16.-Transactional
+-------------------------------------------------------------------
+<tx:annotation-driven transaction-manager="txManager"/>
+public class UserServiceImpl{
+ @Transactional
+ public int UserInsert(UserVO uvo){~}
+ 
+ public int UserDelect(int seq){~}
+ 
+	해당 어노테이션이 붙은 메서드 또는 클래스의 모든 메서드는 하나의 트랜잭션으로 처리
+	1) 메서드 레벨에서의 사용(원자성 보장 :일괄커밋 일괄롤백)
+		: 해당 메서드에서 수행되는 모든 작업이 하나의 트랜잭션으로 처리
+	2) 클래스 레벨에서의 사용
+		: 해당 클래스의 모든 메서드에 적용
+		: 주로 클래스 내의 모든 메서드가 하나의 트랜잭션으로 묶여야 하는 경우에 유용
+		: 메서드 레벨의 설정이 우선
+	3) 속성
+		: 읽기전용 @Transactional(readOnly = true) 
+			트랜잭션이 커밋되지 않고 종료
+		: 격리수준 @Transactional(isolation = Isolation.READ_COMMITTED) 
+			Isolation.READ_COMMITTED, Isolation.REPEATABLE_READ, Isolation.SERIALIZABLE 등
+			여러 트랜잭션이 동시에 실행될 때 트랜잭션 간의 격리 수준을 지정
+		: 전파동작 @Transactional(propagation = Propagation.REQUIRED)	
+			Propagation.REQUIRED, Propagation.REQUIRES_NEW, Propagation.NESTED 등
+			다른 트랜잭션 내에서 메서드가 호출될 때 해당 메서드가 참여할지, 새로운 트랜잭션을 시작할지를 결정
+		: 타임아웃 @Transactional(timeout = 30)
+			timeout은 초 단위로 설정하며, 기본값은 -1로서 타임아웃이 없음
+			지정된 시간 내에 트랜잭션이 완료되지 않으면 롤백
+		: 예외지정 @Transactional(		rollbackFor = { CustomException.class, AnotherException.class },
+               			      	  noRollbackFor = { AllowedException.class })
+		: 멀티속성 @Transactional(readOnly = true, timeout = 30)
+			
+	
+	
+ 
+-------------------------------------------------------------------
+* 주의사항
+-------------------------------------------------------------------
+ 1. @Transactional 은 public 메소드에서만 정상 작동한다.
+
+ 2. @Transactional 을 달아놓은 메소드가 동일한 클래스 내의 다른 메소드에 의해 호출된다면 트랜잭션이 정상 작동하지 않는다.
+		ex: 퍼사드 패턴이나 템플릿 패턴처럼 여러 메소드를 내부적으로 묶어 사용하고 있는 메소드가 있다면 구성요소 메소드에 @Transactional 를 달지 않고 구성요소를 묶고 있는 상위개념의 메소드에 @Transactional 을 달아주어야 한다. 
+		구성요소 메소드에 @Transactional 을 달아 주어 트랜잭션으로 관리 할 경우 rollback 이 정상적으로 작동하지 않는 경우가 발생한다.
+	https://woowabros.github.io/experience/2019/01/29/exception-in-transaction.html
+	propagation 속성이 required 인 경우, 트랜잭션안에서 호출되는 메소드가 트랜잭션으로 같이 묶이게 되어 예상치 못한 결과가 나올 수 있다는 내용이다.
+	※ required propagation 속성은 트랜잭션이 이미 존재하면 append를 하고, 트랜잭션이 존재하지 않다면 새로 생성한다. (공식 doc)
+
+public class UserServiceImpl{
+ @Transactional
+ public boolean pay(UserVO uvo){
+  userInsert();
+  payLog();
+}
+ public int UserDelect(int seq){
+ @Transactional
+ public ~
+}
+
+ 3. Spring Transaction 은 기본적으로 unchecked Exception (RuntimeException) 만 관리하며 
+ 								 checked Exception (IOException, SQLException 등) 은 관리하지 않는다.
+
+								SQLException.class -> 모두 다잡아내려면 Exception.class
+	처리방법 1: @Transactional(rollbackFor=Exception.class) 와 같이 설정하여 모든 Exception 발생시 rollback 이 발생하게 처리하거나
+	(unchecked Exception, checked Exception 모두 Exception.class 밑에 있다.)
+
+	처리방법 2: checked Exception 이 발생할 가능성이 있는 부분을 try ~ catch (SQLException se){throw new RuntimeException(); } 과 같이 처리
+	(checked Exception 발생시 unchecked Exception 으로 예외를 바꾸어 던지게 처리)하여 Transaction의 관리대상으로 묶어버릴 수 있다.
+	
+ 4. pointcut 을 사용한 Transaction 설정과 어노테이션을 사용한 Transaction 설정을 동시에 사용하게 될 경우, 어노테이션이 우선적용(precedence)된다.
+   (https://stackoverflow.com/questions/32057910/custom-spring-aop-around-transactional/33509777#33509777)
+   :@Transactional 붙은 메서드 처리 이후
+    이외 나머지 메서드들은 pointcut 적용 대상이 될 경우 xml기반의 tx설정을 따른다.
+    <aop:pointcut id="cut" expression="execution(* com.lec09..*Impl.*(..))"/>
+    
+   
+   
+   
+   
+   
+   
+   
+
+
+ 

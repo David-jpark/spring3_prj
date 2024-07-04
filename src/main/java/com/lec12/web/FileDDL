@@ -1,0 +1,13 @@
+create sequence board_file_seq start with 1 increment by 1 nocache;
+create table board_file (
+bseq number primary key,     --pk
+oname varchar2(40),
+sname varchar2(40),
+fsize number default 0,
+fpath  varchar2(50),
+seq  number,
+regid varchar2(20) ,
+regdate date default sysdate,
+CONSTRAINT "FK_BFSEQ" FOREIGN KEY(seq) REFERENCES BOARD(SEQ)
+);
+commit;

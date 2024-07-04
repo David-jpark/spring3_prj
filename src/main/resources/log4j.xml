@@ -9,6 +9,15 @@
 			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
 		</layout>
 	</appender>
+	<!-- MyBatis SQL 로그 포맷 jdbc  -->
+	<logger name="jdbc.sqlonly" additivity="false">
+		<level value="info" />
+		<appender-ref ref="console" />
+	</logger>
+    <logger name="jdbc.resultsettable" additivity="false"> 
+            <level value="info" /> 
+            <appender-ref ref="console" />
+    </logger>
 	
 	<!-- Application Loggers -->
 	<logger name="com.lec01.hello">

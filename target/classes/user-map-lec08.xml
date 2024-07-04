@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  
+	"(properties?, ##
+	settings?,
+	typeAliases?,  ##
+	typeHandlers?,
+	objectFactory?,
+	objectWrapperFactory?,
+	plugins?,
+	environments?,  ##
+	mappers?)"   ##
+	  -->
+	  
+
+<mapper namespace="UserNameSpace"><!-- namespace가 절대 겹쳐선 안됨 -->
+
+	<resultMap id="UserResultMap" type="com.lec08.dao.UserVO">
+	    <id property="userSeq" column="user_seq" />
+	    <result property="userId" column="user_id" />
+	    <result property="userPw" column="user_pw" />    
+	    <result property="userName" column="user_name" />
+	    <result property="userGubun" column="user_gubun" />
+	    <result property="regDate" column="regdate" />
+	</resultMap>
+	
+	<!-- 
+	id
+	parameterType = "com.lec08.dao.BoardVO"
+		String이나 변수값을 파라미터 타입으로 쓸 수 있다.
+	resultType
+	resultMap
+	 -->
+	 
+	 <!-- User 리스트  -->
+    <select id="allUser" resultMap="UserResultMap">
+        SELECT *
+        FROM users3
+    </select>
+    
+    <!-- User insert  -->
+    <insert id="userInsert" parameterType = "com.lec08.dao.UserVO">
+        INSERT into users3(user_seq, user_id, user_pw, regdate)
+        VALUES(users3_seq.nextval,#{userId},#{userPw}, sysdate)
+    </insert>
+    
+    <!-- User update  -->
+    <update id="userUpdate" parameterType = "com.lec08.dao.UserVO">
+        UPDATE users3 set
+        user_pw=#{userPw} where user_id=#{userId}
+    </update>
+    
+    <!-- User delete  -->
+    <delete id="userDelete" parameterType = "com.lec08.dao.UserVO">
+        DELETE from users3 where user_seq=#{userSeq}
+    </delete>
+    
+    <!-- User loginCheck  -->
+    <select id="login" parameterType = "com.lec08.dao.UserVO" 
+    						resultMap="UserResultMap">
+       SELECT user_id, user_pw
+       FROM users3
+       WHERE user_id = #{userId} and user_pw = #{userPw}
+    </select>
+	
+ 	<!-- 
+ 	parameterType="int" "com.kitri.biz.dto.UserDTO
+	resultType="hashmap"
+	resultMap="personResultMap"
+	insert  : useGeneratedKeys="true" keyProperty="id"
+	
+	
+	Object selectOne(String statement, Object parameter)
+	List selectList(String statement, Object parameter)
+	Map selectMap(String statement, Object parameter, String mapKey)
+	int insert(String statement, Object parameter)
+	int update(String statement, Object parameter)
+	int delete(String statement, Object parameter)
+
+	void select(String statement, Object parameter, ResultHandler handler)
+	void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler)
+	
+	RowBounds rowBounds = new RowBounds(offset, limit);
+
+	<insert id="insertAuthor" parameterType="domain.blog.Author">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select CAST(RANDOM()*1000000 as INTEGER) a from SYSIBM.SYSDUMMY1
+		</selectKey>
+		insert into Author
+		(id, username, password, email,bio, favourite_section)
+		values
+		(#{id}, #{username}, #{password}, #{email}, #{bio}, #{favouriteSection,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<sql id="selectColumns"> id,username,password </sql>
+	<select id="selectUsers" parameterType="int" resultType="hashmap">
+		select <include refid="selectColumns"/>
+		from some_table
+		where id = #{id}
+	</select>
+	
+	resultMap
+	resultType="hashmap"
+	resultType="com.kitri.biz.user.dto.UserDTO"
+	typeAlias, resultType="userDTOType"
+	
+	<choose>
+		<when test="title != null">
+			AND title like #{title}
+		</when>
+		<when test="author != null and author.name != null">
+			AND author_name like #{author.name}
+		</when>		
+	<otherwise>
+	
+	<where>
+	
+	//Auto Delete comma,
+	<update id="updateAuthorIfNecessary" parameterType="domain.blog.Author">
+		update userinfo
+			<set>
+				<if test="username != null">username=#{username},</if>
+				<if test="password != null">password=#{password},</if>
+			</set>
+		where id=#{id}
+	</update>
+	
+	
+	TRANSACTION
+	void commit()
+	void commit(boolean force)
+	void rollback()
+	void rollback(boolean force)
+	-->
+	
+	
+</mapper>
+
+
+  

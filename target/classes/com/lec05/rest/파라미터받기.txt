@@ -1,0 +1,46 @@
+
+//----------------//<form>데이터  or   쿼리스트링(?empno=777&ename=홍길동)---------------------
+@RequestMapping(value = "/emp", method = {RequestMethod.GET, RequestMethod.POST} )
+@RequestMapping(value = "/emp") // 이렇게 해도 상관 없다.
+public ModelAndView empList2(
+		@RequestParam("ename") String vName, 
+		@RequestParam("empno") int vEmpno) 
+{
+	//String vName = request.getParameter("ename"); // <input type=text name="ename"> servlet방식
+	//String vEmpno= Integer.parseInt(request.getParameter("empno")); // <input type=text name="empno">
+	
+}
+
+//------------------------RESTful :   http://localhost:8081/emp/7733/홍길동 ---------------------
+@RequestMapping(value = "/emp/{empno}/{ename}", method = RequestMethod.GET)
+public  ModelAndView empList2(@PathVariable("empno") int vEmpno, 
+			     @PathVariable("ename") String vName) 
+{
+	
+}
+
+//------------------------------<form>데이터 받기 @ModelAttribute EmpVO evo---------------------
+//VO프로퍼티 == <input name="VO프로퍼티"> 같아야 자동으로 set한다
+
+@RequestMapping(value = "/emp", method = RequestMethod.POST)
+    public ModelAndView addEmployee(@ModelAttribute EmpVO evo) {
+	//<form>데이터  
+	//<input type=text name="ename">
+	// EmpVO :: private String ename; // 서로 같아야한다. 
+}
+
+//------------------------------------
+@RequestMapping(value = "/emp", method = RequestMethod.POST)
+public ModelAndView empList2(@RequestBody EmpVO evo) {
+	//XML or JSON
+}
+
+---------------------------------------get
+B001  게시물보기   ctlBoardList()              				board_list
+B002  상세보기      ctlBoardDetail(int seq)  				board_detail
+B005  댓글삭제      ctlReplyDel(int seq, int rseq)  			reply_del
+---------------------------------------post
+B003  수정           ctlBoardUpdate(int seq, String title, String contents)	board_update
+B004  삭제           ctlBoardDel(int seq)				board_del			
+B006  댓글등록      ctlReplyAdd(int seq, int rseq)			reply_add
+

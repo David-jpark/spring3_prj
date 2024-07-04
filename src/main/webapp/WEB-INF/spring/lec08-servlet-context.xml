@@ -22,6 +22,7 @@
 	<context:component-scan base-package="com.lec08.dao" />
 	
 	<!-- datasource : 프로퍼티 파일을 사용한 형태 -->
+	<context:property-placeholder location="classpath:oracle.properties"/>
 	<bean id="MY_tomcat_ds" class="org.apache.commons.dbcp.BasicDataSource"
 	destroy-method="close">
 	    <property name="driverClassName" value="${lec.driver}" />
@@ -41,7 +42,6 @@
 	    <property name="password"
 	           value="0000" /> 
 	</bean> -->
-	<context:property-placeholder location="classpath:oracle.properties"/>
 	
 	
 	

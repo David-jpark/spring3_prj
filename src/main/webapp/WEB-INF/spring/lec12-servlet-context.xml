@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/data/jpa 
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	">
+	
+<!--  ******************************** ROOT CONTEXT [START] *********************************  -->
+	
+	<!-- ===============================[어노테이션 기반으로 동작]================================== -->
+	<!--  어노테이션 기반 -->
+	<mvc:annotation-driven /> 
+	<!-- 적용 대상 패키지 -->
+	<context:component-scan base-package="com.lec12.web" />
+	
+	
+	<!-- datasource : 프로퍼티 파일을 사용한 형태 -->
+	<context:property-placeholder location="classpath:oracle.properties" />
+	<bean id="MY_tomcat_ds" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+	    <property name="driverClassName" 	value="${lec.driver}" />
+	    <property name="url" 				value="${lec.url}" />
+	    <property name="username" 			value="${lec.username}" />
+	    <property name="password" 			value="${lec.userpw}" /> 
+	</bean>
+	
+	<!--  -->
+	<!-- 파일 업로드 관련 bean설정 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"> 
+		<property name="maxUploadSize" value="10000000"/> <!-- 10MB --> 
+	</bean>
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+</beans>
