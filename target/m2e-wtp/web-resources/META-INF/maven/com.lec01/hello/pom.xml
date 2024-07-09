@@ -87,6 +87,24 @@
 			</exclusions>
 		</dependency>
 		
+		<!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client -->
+        <dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.0.7.RELEASE</version>
+		</dependency>
+		
 		<!-- 파일업로드 : spring-webmvc설치시 spring-web 자동 설치 -->
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->

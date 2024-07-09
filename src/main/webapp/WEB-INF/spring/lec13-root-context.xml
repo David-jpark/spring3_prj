@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/data/jpa 
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	
+	<!--  ********************** C O N T E X T *****************************  -->
+	<context:component-scan base-package="com.lec13.sec" />
+	
+		
+	<!-- datasource : 프로퍼티 파일을 사용한 형태 -->
+	<context:property-placeholder location="classpath:oracle.properties" />
+	<bean id="MY_tomcat_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> 
+	    <property name="driverClassName" 	value="${lec.driver}" />
+	    <property name="url" 				value="${lec.url}" />
+	    <property name="username" 			value="${lec.username}" />
+	    <property name="password" 			value="${lec.userpw}" /> 
+	</bean>
+
+	<!-- MYBATIS CONSOL SQL PRINT : log4jdbc-remix.jar --> 
+	<bean id="myDS_CONSOL_PRINT" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+        <constructor-arg ref="MY_tomcat_ds" />
+        <property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property name="loggingType" value="MULTI_LINE" />
+                <property name="sqlPrefix"   value=""/>
+            </bean>
+        </property>
+    </bean>
+
+
+	<!-- MYBATIS SqlSessionFactory , SqlSessionTemplate(datasource에서 가져온 session 관리) -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="myDS_CONSOL_PRINT" /> 
+		<!-- <property name="dataSource" ref="MY_tomcat_ds" /> -->
+		<property name="mapperLocations" value="classpath:lec13-mappers/*-map.xml" />
+	 	<property name="configLocation"  value="classpath:lec13-mappers/mybatis-context.xml"/> 
+	</bean> 
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"> 
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean> 
+	
+	
+	 <!-- DATASOURCE TRANSACTION MANAGER -->  
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="myDS_CONSOL_PRINT" />
+	</bean>
+	
+	<!--  ###################### UserMapper.java(인터페이스) 사용 #####################  --> 
+	<!-- ================================================
+	     MapperScannerConfigurer를 사용해 모든매퍼(패키지)를 지목할 경우
+	     (UserDAO.java를 버리고 UserMapper.java 인터페이스를 사용)
+	     ================================================   --> 
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lec13.sec.mapper"/>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/> 
+	</bean>
+ 	
+		
+</beans>

@@ -8,6 +8,11 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <!-- 데이터 리소스 설정 이름 "MY_tomcat_ds"이 일치해야 함
+		:: context.xml				<Resource name="MY_tomcat_ds"> 
+		web.xml						<res-ref-name>MY_tomcat_ds</res-ref-name> 
+		lec08-servlet-context.xml	<bean id="MY_tomcat_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		
   <!-- Resource 설정 -->
 <!--   <resource-ref> 
 	  <description>My DataSource</description> 
@@ -24,13 +29,45 @@
 	  <res-auth>Container</res-auth> 
   </resource-ref>
   
+  <!--  =========================== Spring Security ================================ -->
+ 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+  	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring/lec13-root-context.xml
+			/WEB-INF/spring/lec13-security-context.xml
+		</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	
+	<!-- SPRING SECURITY : Session Management -->
+	<listener>
+    	<listener-class>
+      		org.springframework.security.web.session.HttpSessionEventPublisher
+    	</listener-class>
+  	</listener>
+	
+	
+	<!-- SPRING SECURITY : Session Filter -->
+	<filter>
+	    <filter-name>springSecurityFilterChain</filter-name>
+	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+	    <filter-name>springSecurityFilterChain</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
   <!-- 스프링 설정 -->
   <servlet>
     <servlet-name>SPRING_SERVLET</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>contextConfigLocation</param-name>
-      <param-value>/WEB-INF/spring/lec12-servlet-context.xml</param-value>
+      <param-value>/WEB-INF/spring/lec13-servlet-context.xml</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>

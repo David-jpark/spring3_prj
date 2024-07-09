@@ -1,0 +1,66 @@
+구글   https://developers.google.com/identity/protocols/oauth2/scopes?hl=ko#google-sign-in
+카카오 https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api
+네이버 https://developers.naver.com/docs/login/api/api.md
+
+
+CLIENT_ID = '123456789.apps.googleusercontent.com'
+CLIENT_SECRET = 'abc123'  # Read from a file or environmental variable in a real app
+SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly'
+REDIRECT_URI = 'http://example.com/oauth2callback'
+
+--------------------------------------------------------
+GET 1단계: 승인 매개변수 설정  
+--> 사용자에게 보여질 구글 로인인 팝업창 주소
+     (이걸 띠운 사용자가 아이디/비번/동의 완료하면 )
+     (구글이 내가 지정한 callbackuri로 code 발급)
+https://developers.google.com/identity/protocols/oauth2/web-server?hl=ko#httprest
+--------------------------------------------------------
+https://accounts.google.com   /o/oauth2/v2/auth
+client_id
+redirect_uri
+response_type=code
+scope=email profile
+access_type=offline
+
+
+https://localhost:8089/oauth2callback?code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7
+
+@RequestMapping("/oauth2callback")
+public ___ getAccessToken(@RequestParam code) {
+	//4/P7q7W91a-oMsCeLvIaQm6bTrgtp7	
+
+--------------------------------------------------------
+POST 2단계: Google의 OAuth 2.0 서버로 리디렉션하기( 발급된code)
+발급된code --> access토큰요청
+--------------------------------------------------------
+https://oauth2.googleapis.com     /token
+ client_id
+ client_secret
+ redirect_uri=http://localhost:8089/oauth2callback&
+ grant_type': 'authorization_code'
+ code
+
+credentials --> session['credentials'] 담기
+{
+  "access_token": "1/fFAGRNJru1FTz70BzhT3Zg",
+  "expires_in": 3920,
+  "token_type": "Bearer",
+  "scope": "https://www.googleapis.com/auth/drive.metadata.readonly",
+
+  "refresh_token": ""
+}
+
+--------------------------------------------------------
+GET N단계: 발급된 토큰을 이용해서 SCOPE에 접근 : 필요한 정보 받아가기
+https://developers.google.com/identity/protocols/oauth2/scopes?hl=ko
+--------------------------------------------------------
+GET https://www.googleapis.com/userinfo/v2/me?access_token=access_token
+
+
+
+
+
+
+4단계: OAuth 2.0 서버 응답 처리
+
+

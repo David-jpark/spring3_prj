@@ -1,0 +1,81 @@
+ 
+---------------------------------------
+Spring Security
+---------------------------------------
+
+drop table member;
+drop sequence member_seq;
+create table member (
+		mseq number,
+		mid varchar2(20),
+		mpw varchar2(40),
+		mname varchar2(20),
+		mgubun char(1) default 'u',
+		regdate date default sysdate
+);
+create sequence member_seq start with 1 increment by 1 nocache;
+insert into member(mseq,mid,mpw,mname,mgubun,regdate) values(member_seq.nextval , 'user','111','나유저','u', sysdate);
+insert into member(mseq,mid,mpw,mname,mgubun,regdate) values(member_seq.nextval , 'admin','111','나관리','a', sysdate);
+commit;
+
+select mseq,mid,mpw,mname,mgubun, regdate from member;
+
+
+
+CREATE TABLE tbl_users (
+	  id number primary key,
+	  username varchar2(100) NOT NULL,
+	  password varchar2(20) NOT NULL,
+	  enabled int NOT NULL
+	); 
+CREATE TABLE tbl_user_role (
+  userid number NOT NULL,
+  rolename varchar2(100) NOT NULL
+);
+    
+insert into tbl_users values(1, 'user', '111', 1);
+insert into tbl_users values(2, 'admin', '111', 1);
+insert into tbl_user_role values(1, 'ROLE_USER');
+insert into tbl_user_role values(2, 'ROLE_ADMIN');
+commit;
+
+	
+---------------------------------------
+ pom.xml
+---------------------------------------
+		<!-- Spring : bean core aop el -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		
+		
+
+		<!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client -->
+        <dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.0.7.RELEASE</version>
+		</dependency>
+		
+        
+        
